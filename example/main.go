@@ -6,7 +6,7 @@ import (
 	_ "image/jpeg"
 	"os"
 
-	"github.com/marekm4/color-extractor"
+	color_extractor "github.com/brisbanewebdeveloper/color-extractor"
 )
 
 func main() {
