@@ -25,14 +25,19 @@ type Config struct {
 	SmallBucket float64
 }
 
-func ExtractColors(image image.Image) []color.Color {
+type Color struct {
+	Color color.Color
+	Count float64
+}
+
+func ExtractColors(image image.Image) []Color {
 	return ExtractColorsWithConfig(image, Config{
 		DownSizeTo:  224.,
 		SmallBucket: .01,
 	})
 }
 
-func ExtractColorsWithConfig(image image.Image, config Config) []color.Color {
+func ExtractColorsWithConfig(image image.Image, config Config) []Color {
 	width := image.Bounds().Max.X
 	height := image.Bounds().Max.Y
 
@@ -87,14 +92,17 @@ func ExtractColorsWithConfig(image image.Image, config Config) []color.Color {
 	sort.Sort(sort.Reverse(ByCount(bucketsAverages)))
 
 	// export color.Color from bucket, ignore small buckets
-	colors := []color.Color{}
+	colors := []Color{}
 	for _, avg := range bucketsAverages {
 		if avg.Count/totalCount > config.SmallBucket {
-			colors = append(colors, color.RGBA{
-				R: uint8(math.Round(avg.Red)),
-				G: uint8(math.Round(avg.Green)),
-				B: uint8(math.Round(avg.Blue)),
-				A: 255,
+			colors = append(colors, Color{
+				Color: color.RGBA{
+					R: uint8(math.Round(avg.Red)),
+					G: uint8(math.Round(avg.Green)),
+					B: uint8(math.Round(avg.Blue)),
+					A: 255,
+				},
+				Count: avg.Count,
 			})
 		}
 	}
