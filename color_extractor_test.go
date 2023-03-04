@@ -14,85 +14,86 @@ func TestExtractColors(t *testing.T) {
 	green := color.RGBA{R: 0, G: 255, B: 0, A: 255}
 	transparent := color.RGBA{R: 0, G: 0, B: 0, A: 0}
 	semiTransparentRed := color.RGBA{R: 255, G: 0, B: 0, A: 127}
+	semiTransparentRedTransformed := color.RGBA{R: 127, G: 0, B: 0, A: 255}
 
 	testCases := map[string]struct {
 		Image           image.Image
 		ExtractedColors []Color
 	}{
 		"Empty file": {
-			Image:           imageFromColors([]Color{}),
+			Image:           imageFromColors([]color.Color{}),
 			ExtractedColors: []Color{},
 		},
 		"Single pixel": {
-			Image: imageFromColors([]Color{
-				{Color: red, Count: 0.4980392156862745},
+			Image: imageFromColors([]color.Color{
+				red,
 			}),
 			ExtractedColors: []Color{
 				{Color: red, Count: 1},
 			},
 		},
 		"One color": {
-			Image: imageFromColors([]Color{
-				{Color: white},
-				{Color: white},
-				{Color: white},
-				{Color: white},
-				{Color: white},
+			Image: imageFromColors([]color.Color{
+				white,
+				white,
+				white,
+				white,
+				white,
 			}),
 			ExtractedColors: []Color{
 				{Color: white, Count: 5},
 			},
 		},
 		"Transparent image": {
-			Image: imageFromColors([]Color{
-				{Color: white},
-				{Color: white},
-				{Color: white},
-				{Color: transparent},
+			Image: imageFromColors([]color.Color{
+				white,
+				white,
+				white,
+				transparent,
 			}),
 			ExtractedColors: []Color{
 				{Color: white, Count: 3},
 			},
 		},
 		"Semitransparent single pixel": {
-			Image: imageFromColors([]Color{
-				{Color: semiTransparentRed},
+			Image: imageFromColors([]color.Color{
+				semiTransparentRed,
 			}),
 			ExtractedColors: []Color{
-				{Color: red, Count: 0.4980392156862745},
+				{Color: semiTransparentRedTransformed, Count: 1},
 			},
 		},
 		"Semitransparent image": {
-			Image: imageFromColors([]Color{
-				{Color: semiTransparentRed},
-				{Color: semiTransparentRed},
-				{Color: green},
+			Image: imageFromColors([]color.Color{
+				semiTransparentRed,
+				semiTransparentRed,
+				green,
 			}),
 			ExtractedColors: []Color{
+				{Color: semiTransparentRedTransformed, Count: 2},
 				{Color: green, Count: 1},
-				{Color: red, Count: 0.996078431372549},
 			},
 		},
 		"Semitransparent image, bigger semitransparent region": {
-			Image: imageFromColors([]Color{
-				{Color: semiTransparentRed},
-				{Color: semiTransparentRed},
-				{Color: semiTransparentRed},
-				{Color: green},
+			Image: imageFromColors([]color.Color{
+				semiTransparentRed,
+				semiTransparentRed,
+				semiTransparentRed,
+				green,
 			}),
 			ExtractedColors: []Color{
-				{Color: red, Count: 1.4941176470588236},
+				{Color: semiTransparentRedTransformed, Count: 3},
 				{Color: green, Count: 1},
 			},
 		},
 		"Two colors": {
-			Image: imageFromColors([]Color{
-				{Color: red},
-				{Color: red},
-				{Color: green},
-				{Color: green},
-				{Color: red},
-				{Color: red},
+			Image: imageFromColors([]color.Color{
+				red,
+				red,
+				green,
+				green,
+				red,
+				red,
 			}),
 			ExtractedColors: []Color{
 				{Color: red, Count: 4},
@@ -100,28 +101,28 @@ func TestExtractColors(t *testing.T) {
 			},
 		},
 		"Mixed colors": {
-			Image: imageFromColors([]Color{
-				{Color: red},
-				{Color: red},
-				{Color: color.RGBA{R: 245, G: 0, B: 0, A: 255}},
-				{Color: color.RGBA{R: 245, G: 0, B: 0, A: 255}},
-				{Color: green},
-				{Color: green},
-				{Color: color.RGBA{R: 0, G: 240, B: 0, A: 255}},
+			Image: imageFromColors([]color.Color{
+				red,
+				red,
+				color.RGBA{R: 245, G: 0, B: 0, A: 255},
+				color.RGBA{R: 245, G: 0, B: 0, A: 255},
+				green,
+				green,
+				color.RGBA{R: 0, G: 240, B: 0, A: 255},
 			}),
 			ExtractedColors: []Color{
-				{Color: color.RGBA{R: 250, G: 0, B: 0, A: 255}, Count: 4},
-				{Color: color.RGBA{R: 0, G: 250, B: 0, A: 255}, Count: 3},
+				{Color: color.RGBA{R: 245, G: 0, B: 0, A: 255}, Count: 4},
+				{Color: color.RGBA{R: 0, G: 240, B: 0, A: 255}, Count: 3},
 			},
 		},
 		"File": {
 			Image: imageFromFile("example/Fotolia_45549559_320_480.jpg"),
 			ExtractedColors: []Color{
-				{Color: color.RGBA{R: 232, G: 230, B: 228, A: 255}, Count: 30559},
-				{Color: color.RGBA{R: 58, G: 58, B: 10, A: 255}, Count: 20546},
-				{Color: color.RGBA{R: 205, G: 51, B: 25, A: 255}, Count: 11071},
-				{Color: color.RGBA{R: 191, G: 178, B: 56, A: 255}, Count: 8705},
-				{Color: color.RGBA{R: 104, G: 152, B: 12, A: 255}, Count: 5905},
+				{Color: color.RGBA{R: 213, G: 196, B: 154, A: 255}, Count: 30559},
+				{Color: color.RGBA{R: 75, G: 92, B: 2, A: 255}, Count: 20546},
+				{Color: color.RGBA{R: 135, G: 0, B: 0, A: 255}, Count: 11071},
+				{Color: color.RGBA{R: 131, G: 131, B: 57, A: 255}, Count: 8705},
+				{Color: color.RGBA{R: 124, G: 164, B: 3, A: 255}, Count: 5905},
 			},
 		},
 	}
@@ -136,10 +137,10 @@ func TestExtractColors(t *testing.T) {
 	}
 }
 
-func imageFromColors(colors []Color) image.Image {
+func imageFromColors(colors []color.Color) image.Image {
 	img := image.NewRGBA(image.Rect(0, 0, len(colors), 1))
 	for i, c := range colors {
-		img.Set(i, 0, c.Color)
+		img.Set(i, 0, c)
 	}
 	return img
 }

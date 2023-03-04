@@ -27,7 +27,7 @@ type Config struct {
 
 type Color struct {
 	Color color.Color
-	Count float64
+	Count int
 }
 
 func ExtractColors(image image.Image) []Color {
@@ -61,14 +61,15 @@ func ExtractColorsWithConfig(image image.Image, config Config) []Color {
 			k := b >> 7
 			if a > 0 {
 				alphaFactor := float64(a) / 255.
-				buckets[i][j][k].Red += float64(r) * alphaFactor
-				buckets[i][j][k].Green += float64(g) * alphaFactor
-				buckets[i][j][k].Blue += float64(b) * alphaFactor
-				buckets[i][j][k].Count += alphaFactor
-				totalCount += alphaFactor
+				buckets[i][j][k].Red = float64(r) * alphaFactor
+				buckets[i][j][k].Green = float64(g) * alphaFactor
+				buckets[i][j][k].Blue = float64(b) * alphaFactor
+				buckets[i][j][k].Count += 1
+				totalCount += 1
 			}
 		}
 	}
+	// log.Printf("buckets: %v", buckets)
 
 	// calculate bucket's averages
 	var bucketsAverages []bucket
@@ -77,16 +78,12 @@ func ExtractColorsWithConfig(image image.Image, config Config) []Color {
 			for k := 0; k < 2; k++ {
 				currentBucket := buckets[i][j][k]
 				if currentBucket.Count > 0 {
-					bucketsAverages = append(bucketsAverages, bucket{
-						Count: currentBucket.Count,
-						Red:   currentBucket.Red / currentBucket.Count,
-						Green: currentBucket.Green / currentBucket.Count,
-						Blue:  currentBucket.Blue / currentBucket.Count,
-					})
+					bucketsAverages = append(bucketsAverages, currentBucket)
 				}
 			}
 		}
 	}
+	// log.Printf("bucketsAverages: %v", bucketsAverages)
 
 	// sort buckets by bucket size
 	sort.Sort(sort.Reverse(ByCount(bucketsAverages)))
@@ -102,7 +99,7 @@ func ExtractColorsWithConfig(image image.Image, config Config) []Color {
 					B: uint8(math.Round(avg.Blue)),
 					A: 255,
 				},
-				Count: avg.Count,
+				Count: int(avg.Count),
 			})
 		}
 	}
